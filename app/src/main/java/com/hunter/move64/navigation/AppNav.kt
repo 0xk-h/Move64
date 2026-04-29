@@ -11,8 +11,8 @@ import com.hunter.move64.ui.screens.HomeScreen
 
 @Composable
 fun AppNav() {
-    val navController = rememberNavController()
-    val currentActive = navController.currentBackStackEntryAsState().value?.destination?.route
+    // val navController = rememberNavController()
+    // val currentActive = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
