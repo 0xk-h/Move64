@@ -2,6 +2,8 @@ package com.hunter.move64.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -18,9 +20,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hunter.move64.R
 import com.hunter.move64.core.chess.Pieces
+import com.hunter.move64.ui.viewmodels.States
+
+object ChessColors {
+    val black = Color(0xFFC2A779)
+    val white = Color(0xFF765637)
+    val highlightsW = Color(0xFFA27635)
+    val highlightsB = Color(0xFFB48A3D)
+    val none = Color(0x00FFFFFF)
+}
 
 @Composable
-fun ChessBoard(grid: List<Pieces?>) {
+fun ChessBoard(
+    grid: List<Pieces?>,
+    boardState: List<States>,
+    onSquareClick: (Int) -> Unit
+) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,11 +55,21 @@ fun ChessBoard(grid: List<Pieces?>) {
                                 .size(squareSize)
                                 .background(
                                     if ((i + j) % 2 == 0) {
-                                        Color(0xFFC2A779)
+                                        ChessColors.black
                                     } else {
-                                        Color(0xFF765637)
+                                        ChessColors.white
                                     }
-                                ),
+                                )
+                                .background(
+                                    if (boardState[index] == States.Highlighted) {
+                                        if ((i + j) % 2 == 0) ChessColors.highlightsB else ChessColors.highlightsW
+                                    } else {
+                                        ChessColors.none
+                                    }
+                                )
+                                .clickable {
+                                    onSquareClick(index)
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             val piece = grid[index]

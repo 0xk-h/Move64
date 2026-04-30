@@ -35,6 +35,7 @@ fun GameScreen(
 ) {
     val board by vm.board.collectAsState()
     val grid = board.toGrid()
+    val boardState by vm.boardState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -83,7 +84,11 @@ fun GameScreen(
             )
             Spacer(modifier = Modifier.size(32.dp))
 
-            ChessBoard(grid)
+            ChessBoard(
+                grid,
+                boardState,
+                onSquareClick = vm::onSquareClick
+            )
 
             Spacer(modifier = Modifier.size(32.dp))
 

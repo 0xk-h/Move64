@@ -2,19 +2,19 @@ package com.hunter.move64.core.chess
 
 data class Board (
     // BitBoards
-    val whitePawn: Long = 0L,
-    val whiteRook: Long = 0L,
-    val whiteKnight: Long = 0L,
-    val whiteBishop: Long = 0L,
-    val whiteQueen: Long = 0L,
-    val whiteKing: Long = 0L,
+    val whitePawn: ULong = 0UL,
+    val whiteRook: ULong = 0UL,
+    val whiteKnight: ULong = 0UL,
+    val whiteBishop: ULong = 0UL,
+    val whiteQueen: ULong = 0UL,
+    val whiteKing: ULong = 0UL,
 
-    val blackPawn: Long = 0L,
-    val blackRook: Long = 0L,
-    val blackKnight: Long = 0L,
-    val blackBishop: Long = 0L,
-    val blackQueen: Long = 0L,
-    val blackKing: Long = 0L,
+    val blackPawn: ULong = 0UL,
+    val blackRook: ULong = 0UL,
+    val blackKnight: ULong = 0UL,
+    val blackBishop: ULong = 0UL,
+    val blackQueen: ULong = 0UL,
+    val blackKing: ULong = 0UL,
 
     // Game State
     val isWhiteMove: Boolean = true,
@@ -30,27 +30,27 @@ data class Board (
     // Draw Condition
     val halfMoveClock: Int = 0
 ) {
-    val whitePieces: Long
+    val whitePieces: ULong
         get() = whitePawn or whiteRook or whiteBishop or whiteKnight or whiteQueen or whiteKing
 
-    val blackPieces: Long
+    val blackPieces: ULong
         get() = blackPawn or blackKing or blackBishop or blackQueen or blackKnight or blackRook
 
-    val occupied: Long
+    val occupied: ULong
         get() = whitePieces or blackPieces
 
-    val empty: Long
+    val empty: ULong
         get() = occupied.inv()
 
     fun toGrid(): List<Pieces?> {
         val grid = MutableList<Pieces?>(64) { null }
 
-        fun setPieces(bb: Long, piece: Pieces) {
-            var bb = bb
-            while (bb != 0L) {
-                val index = java.lang.Long.numberOfTrailingZeros(bb)
+        fun setPieces(bb: ULong, piece: Pieces) {
+            var currentBb = bb
+            while (currentBb != 0UL) {
+                val index = java.lang.Long.numberOfTrailingZeros(currentBb.toLong())
                 grid[index] = piece
-                bb = bb and (bb - 1)
+                currentBb = currentBb and (currentBb - 1u)
             }
         }
 
@@ -77,20 +77,20 @@ data class Board (
 fun getInitialBoard(): Board {
     return Board(
         // White pieces
-        whitePawn   = 0x000000000000FF00L,
-        whiteRook   = 0x0000000000000081L,
-        whiteKnight = 0x0000000000000042L,
-        whiteBishop = 0x0000000000000024L,
-        whiteQueen  = 0x0000000000000008L,
-        whiteKing   = 0x0000000000000010L,
+        whitePawn   = 0x000000000000FF00UL,
+        whiteRook   = 0x0000000000000081UL,
+        whiteKnight = 0x0000000000000042UL,
+        whiteBishop = 0x0000000000000024UL,
+        whiteQueen  = 0x0000000000000008UL,
+        whiteKing   = 0x0000000000000010UL,
 
         // Black pieces
-        blackPawn   = 0x00FF000000000000L,
-        blackRook   = 0x8100000000000000UL.toLong(),
-        blackKnight = 0x4200000000000000L,
-        blackBishop = 0x2400000000000000L,
-        blackQueen  = 0x0800000000000000L,
-        blackKing   = 0x1000000000000000L,
+        blackPawn   = 0x00FF000000000000UL,
+        blackRook   = 0x8100000000000000UL,
+        blackKnight = 0x4200000000000000UL,
+        blackBishop = 0x2400000000000000UL,
+        blackQueen  = 0x0800000000000000UL,
+        blackKing   = 0x1000000000000000UL,
 
         // Game state
         isWhiteMove = true,

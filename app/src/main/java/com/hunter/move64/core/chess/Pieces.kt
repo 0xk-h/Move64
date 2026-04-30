@@ -1,6 +1,6 @@
 package com.hunter.move64.core.chess
 
-public enum class Pieces {
+enum class Pieces {
     WhiteKing,
     WhiteQueen,
     WhiteBishop,
@@ -13,4 +13,13 @@ public enum class Pieces {
     BlackKnight,
     BlackRook,
     BlackPawn
+}
+
+enum class PieceType {
+    King,
+    Queen,
+    Bishop,
+    Knight,
+    Rook,
+    Pawn
 }
