@@ -61,7 +61,7 @@ fun ChessBoard(
                                     }
                                 )
                                 .background(
-                                    if (boardState[index] == States.Highlighted) {
+                                    if (boardState[index] == States.Highlighted || boardState[index] == States.Selected) {
                                         if ((i + j) % 2 == 0) ChessColors.highlightsB else ChessColors.highlightsW
                                     } else {
                                         ChessColors.none

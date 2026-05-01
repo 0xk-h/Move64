@@ -42,6 +42,32 @@ data class Board (
     val empty: ULong
         get() = occupied.inv()
 
+    fun getPiece(index: Int): Piece? {
+        val mask = 1UL shl index
+
+        // White pieces
+        if ((whitePawn and mask) != 0UL) return Piece(PieceType.Pawn, Color.White)
+        if ((whiteKnight and mask) != 0UL) return Piece(PieceType.Knight, Color.White)
+        if ((whiteBishop and mask) != 0UL) return Piece(PieceType.Bishop, Color.White)
+        if ((whiteRook and mask) != 0UL) return Piece(PieceType.Rook, Color.White)
+        if ((whiteQueen and mask) != 0UL) return Piece(PieceType.Queen, Color.White)
+        if ((whiteKing and mask) != 0UL) return Piece(PieceType.King, Color.White)
+
+        // Black pieces
+        if ((blackPawn and mask) != 0UL) return Piece(PieceType.Pawn, Color.Black)
+        if ((blackKnight and mask) != 0UL) return Piece(PieceType.Knight, Color.Black)
+        if ((blackBishop and mask) != 0UL) return Piece(PieceType.Bishop, Color.Black)
+        if ((blackRook and mask) != 0UL) return Piece(PieceType.Rook, Color.Black)
+        if ((blackQueen and mask) != 0UL) return Piece(PieceType.Queen, Color.Black)
+        if ((blackKing and mask) != 0UL) return Piece(PieceType.King, Color.Black)
+
+        return null
+    }
+
+    fun getCurrPlayer(): Color {
+        return if (isWhiteMove) Color.White else Color.Black
+    }
+
     fun toGrid(): List<Pieces?> {
         val grid = MutableList<Pieces?>(64) { null }
 

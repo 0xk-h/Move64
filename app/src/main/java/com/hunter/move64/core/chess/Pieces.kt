@@ -23,3 +23,13 @@ enum class PieceType {
     Rook,
     Pawn
 }
+
+enum class Color {
+    White,
+    Black
+}
+
+data class Piece(
+    val type: PieceType,
+    val color: Color
+)
