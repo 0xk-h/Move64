@@ -1,7 +1,5 @@
 package com.hunter.move64.core.chess
 
-import java.time.temporal.TemporalAdjusters.next
-
 fun knightMoves(index: Int): ULong {
     val moves = listOf(17, 15, 10, 6, -6, -10, -15, -17)
 

@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +81,30 @@ fun ChessBoard(
                                     painter = painterResource(id = getDrawable(it)),
                                     contentDescription = it.name,
                                     modifier = Modifier.size(squareSize * 0.8f)
+                                )
+                            }
+
+                            if (boardState[index] == States.Move) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(squareSize * 0.3f)
+                                        .background(
+                                            Color.Black.copy(alpha = 0.4f),
+                                            CircleShape
+                                        )
+                                )
+                            }
+
+                            if (boardState[index] == States.Capture) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(squareSize * 0.05f)
+                                        .border(
+                                            3.dp,
+                                            Color.Black.copy(alpha = 0.4f),
+                                            CircleShape
+                                        )
                                 )
                             }
 

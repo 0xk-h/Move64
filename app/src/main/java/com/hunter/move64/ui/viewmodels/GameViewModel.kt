@@ -46,11 +46,12 @@ class GameViewModel: ViewModel() {
 
         // apply the move and reset the board state
         if (boardState.value[index] == States.Move || boardState.value[index] == States.Capture) {
-            _board.value = applyMove()
+            _board.value = applyMove(board.value, selectedSquare!!, index)
             val newState = MutableList(64) {States.Normal}
             newState[selectedSquare!!] = States.Highlighted
             newState[index] = States.Highlighted
             _boardState.value = newState
+            selectedSquare = null
         }
 
         // Selected invalid so nothing is selected
@@ -72,5 +73,12 @@ class GameViewModel: ViewModel() {
 
             _boardState.value = newState
         }
+    }
+
+    fun reset() {
+        _board.value = getInitialBoard()
+        _boardState.value = List(64) { States.Normal }
+
+        selectedSquare = null
     }
 }

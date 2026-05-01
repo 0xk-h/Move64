@@ -17,18 +17,18 @@ data class Board (
     val blackKing: ULong = 0UL,
 
     // Game State
-    val isWhiteMove: Boolean = true,
+    var isWhiteMove: Boolean = true,
 
     // Special Rules
-    val whiteKingSideCastle: Boolean = true,
-    val whiteQueenSideCastle: Boolean = true,
-    val blackKingSideCastle: Boolean = true,
-    val blackQueenSideCastle: Boolean = true,
+    var whiteKingSideCastle: Boolean = true,
+    var whiteQueenSideCastle: Boolean = true,
+    var blackKingSideCastle: Boolean = true,
+    var blackQueenSideCastle: Boolean = true,
 
-    val enPassantSquare: Int? = null,
+    var enPassantSquare: Int? = null,
 
     // Draw Condition
-    val halfMoveClock: Int = 0
+    var halfMoveClock: Int = 0
 ) {
     val whitePieces: ULong
         get() = whitePawn or whiteRook or whiteBishop or whiteKnight or whiteQueen or whiteKing

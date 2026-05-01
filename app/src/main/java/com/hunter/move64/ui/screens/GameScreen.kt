@@ -41,7 +41,9 @@ fun GameScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = "Game")
+                    Text(
+                        text = if (board.isWhiteMove) "White's turn" else "Black's turn"
+                    )
                 },
                 navigationIcon = {
                     IconButton(
@@ -58,7 +60,7 @@ fun GameScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { /* Handle settings click */ },
+                        onClick = { vm.reset() },
                         modifier = Modifier.padding(4.dp)
                     )
                     {
