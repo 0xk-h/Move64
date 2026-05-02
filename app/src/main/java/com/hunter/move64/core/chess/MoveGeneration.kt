@@ -69,7 +69,13 @@ fun generatePawnMoves(board: Board, index: Int, color: Color): Output {
 }
 
 fun generateRookMoves(board: Board, index: Int, color: Color): Output {
-    return Output()
+    val occupied = board.occupied
+    val reachable = rookMoves(index, occupied)
+    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+
+    val moves = reachable and occupied.inv()
+    val captures = reachable and enemies
+    return Output(captures = captures, moves = moves)
 }
 
 fun generateKnightMoves(board: Board, index: Int, color: Color): Output {

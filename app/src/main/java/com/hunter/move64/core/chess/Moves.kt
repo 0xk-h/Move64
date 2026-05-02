@@ -87,6 +87,7 @@ fun rookMoves(index: Int, occupied: ULong): ULong {
     }
 
     // left
+    s = index
     while (s % 8 != 0) {
         s -= 1
         val bit = 1UL shl s
