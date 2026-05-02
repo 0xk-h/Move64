@@ -1,5 +1,7 @@
 package com.hunter.move64.core.chess
 
+import androidx.compose.ui.util.fastCbrt
+
 data class Board (
     // BitBoards
     val whitePawn: ULong = 0UL,
@@ -41,6 +43,33 @@ data class Board (
 
     val empty: ULong
         get() = occupied.inv()
+
+    fun isAttacked(index: Int, color: Color): Boolean {
+        // color is the inverse of the enemy color (color of ally)
+        val occupied = occupied
+
+        val diagonal = bishopMoves(index, occupied)
+        var enemies = if(color == Color.White) blackQueen or blackBishop else whiteQueen or whiteBishop
+        if (diagonal and enemies != 0UL) return true
+
+        val straight = rookMoves(index, occupied)
+        enemies = if(color == Color.White) blackQueen or blackRook else whiteQueen or whiteRook
+        if (straight and enemies != 0UL) return true
+
+        val knight = knightMoves(index)
+        enemies = if(color == Color.White) blackKnight else whiteKnight
+        if (knight and enemies != 0UL) return true
+
+        val king = kingMoves(index)
+        enemies = if(color == Color.White) blackKing else whiteKing
+        if (king and enemies != 0UL) return true
+
+        val pawn = if(color == Color.White) blackPawnAttackersTo(index) else whitePawnAttackersTo(index)
+        enemies = if(color == Color.White) blackPawn else whitePawn
+        if (pawn and enemies != 0UL) return true
+
+        return false
+    }
 
     fun getPiece(index: Int): Piece? {
         val mask = 1UL shl index

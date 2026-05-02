@@ -44,7 +44,7 @@ class GameViewModel: ViewModel() {
 
         // apply the move and reset the board state
         if (boardState.value[index] == States.Move || boardState.value[index] == States.Capture) {
-            _board.value = applyMove(board.value, selectedSquare!!, index)
+            _board.value = applyMove(board.value, selectedSquare!!, index, null)
             _boardState.value = List(64) {States.Normal}
             val newHighlights = MutableList(64) {false}
             newHighlights[selectedSquare!!] = true

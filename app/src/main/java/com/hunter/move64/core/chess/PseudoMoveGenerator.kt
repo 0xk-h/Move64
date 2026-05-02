@@ -1,5 +1,7 @@
 package com.hunter.move64.core.chess
 
+import android.service.autofill.Validators.and
+
 data class Output (
     val captures: ULong = 0UL,
     val moves: ULong = 0UL
@@ -112,8 +114,31 @@ fun generateKingMoves(board: Board, index: Int, color: Color): Output {
     val occupied = board.occupied
     val reachable = kingMoves(index)
     val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
-
-    val moves = reachable and occupied.inv()
+    var moves = reachable and occupied.inv()
     val captures = reachable and enemies
+
+    // King Side castling check
+    val kingSideRights = if(color == Color.White) board.whiteKingSideCastle else board.blackKingSideCastle
+    if (
+        kingSideRights &&
+        occupied and (1UL shl (index + 1)) == 0UL &&
+        occupied and (1UL shl (index + 2)) == 0UL &&
+        !board.isAttacked(index, color) &&
+        !board.isAttacked(index + 1, color) &&
+        !board.isAttacked(index + 2, color)
+    ) moves = moves or (1UL shl (index + 2))
+
+    // Queen Side castling check
+    val queenSideRights = if(color == Color.White) board.whiteQueenSideCastle else board.blackQueenSideCastle
+    if (
+        queenSideRights &&
+        occupied and (1UL shl (index - 1)) == 0UL &&
+        occupied and (1UL shl (index - 2)) == 0UL &&
+        occupied and (1UL shl (index - 3)) == 0UL &&
+        !board.isAttacked(index, color) &&
+        !board.isAttacked(index - 1, color) &&
+        !board.isAttacked(index - 2, color)
+    ) moves = moves or (1UL shl (index - 2))
+
     return Output(captures = captures, moves = moves)
 }

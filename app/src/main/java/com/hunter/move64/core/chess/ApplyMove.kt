@@ -1,16 +1,52 @@
 package com.hunter.move64.core.chess
 
-fun applyMove(board: Board, from: Int, to: Int): Board {
+import kotlin.math.abs
+
+fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
     var board = board
     val piece = board.getPiece(from)
     val captured = board.getPiece(to)
 
-    // updating customs
-    board.isWhiteMove = !board.isWhiteMove
-    board.enPassantSquare = null
+    println(piece!!.type)
+    println("from: $from ; to: $to")
 
-    board = updateBoard(board, piece!!, 1UL shl from)
-    board = updateBoard(board, piece, 1UL shl to)
+
+
+    // just some customs
+    board = updateGameState(board, from, piece!!)
+
+    // remove from previous position
+    board = updateBoard(board, piece, 1UL shl from)
+
+    // add it in the new position
+    board = if (promotion != null) {
+        updateBoard(board, Piece(promotion, piece.color), 1UL shl to)
+    } else {
+        updateBoard(board, piece, 1UL shl to)
+    }
+
+    // if castling happens should move the rook
+    if (piece.type == PieceType.King && abs(from - to) == 2) {
+        // Queen Side Castling
+        if (to < from) {
+            // from Position of rook
+            println("from position of rook: ${to - 2}")
+            println("to position of rook: ${to + 1}")
+            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 2))
+            // to Position of rook
+            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
+        }
+        // King Side Castling
+        else {
+            // from Position of rook
+            println("from position of rook: ${to + 1}")
+            println("to position of rook: ${to - 1}")
+            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
+            // to Position of rook
+            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 1))
+        }
+    }
+
     captured?.let {
         board = updateBoard(board, captured, (1UL shl to))
     }
@@ -62,4 +98,33 @@ fun updateBoard(board: Board, piece: Piece, mask: ULong): Board {
             )
         }
     }
+}
+
+fun updateGameState(board: Board, from: Int, piece: Piece): Board {
+    when (piece.type) {
+        PieceType.King -> {
+            if (piece.color == Color.White) {
+                board.whiteKingSideCastle = false
+                board.whiteQueenSideCastle = false
+            } else {
+                board.blackKingSideCastle = false
+                board.blackQueenSideCastle = false
+            }
+        }
+        PieceType.Rook -> {
+            when (from) {
+                0 -> board.whiteQueenSideCastle = false
+                7 -> board.whiteKingSideCastle = false
+                56 -> board.blackQueenSideCastle = false
+                63 -> board.blackKingSideCastle = false
+                else -> {}
+            }
+        }
+        else -> {}
+    }
+
+    board.isWhiteMove = !board.isWhiteMove
+    board.enPassantSquare = null
+
+    return board
 }

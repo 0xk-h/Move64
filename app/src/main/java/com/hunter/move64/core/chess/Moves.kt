@@ -116,3 +116,23 @@ fun rookMoves(index: Int, occupied: ULong): ULong {
 fun queenMoves(index: Int, occupied: ULong): ULong {
     return rookMoves(index, occupied) or bishopMoves(index, occupied)
 }
+
+fun whitePawnAttackersTo(index: Int): ULong {
+    val bit = 1UL shl index
+    var res = 0UL
+
+    res = res or ((bit shr 7) and notHFile)
+    res = res or ((bit shr 9) and notAFile)
+
+    return res
+}
+
+fun blackPawnAttackersTo(index: Int): ULong {
+    val bit = 1UL shl index
+    var res = 0UL
+
+    res = res or ((bit shl 7) and notAFile)
+    res = res or ((bit shl 9) and notHFile)
+
+    return res
+}
