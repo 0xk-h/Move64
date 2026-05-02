@@ -1,31 +1,46 @@
 package com.hunter.move64.core.chess
 
+val notAFile = 0xfefefefefefefefeUL
+val notHFile = 0x7f7f7f7f7f7f7f7fUL
+val notABFile = 0xfcfcfcfcfcfcfcfcUL
+val notGHFile = 0x3f3f3f3f3f3f3f3fUL
+
 fun knightMoves(index: Int): ULong {
-    val moves = listOf(17, 15, 10, 6, -6, -10, -15, -17)
+    val bit = 1UL shl index
 
     var res = 0UL
 
-    for (offset in moves) {
-        val target = index + offset
-        if (target in 0..63) {
-            res = res or (1UL shl target)
-        }
-    }
+    res = res or ((bit shl 17) and notAFile)
+    res = res or ((bit shl 15) and notHFile)
+    res = res or ((bit shl 10) and notABFile)
+    res = res or ((bit shl 6)  and notGHFile)
+
+    res = res or ((bit shr 17) and notHFile)
+    res = res or ((bit shr 15) and notAFile)
+    res = res or ((bit shr 10) and notGHFile)
+    res = res or ((bit shr 6)  and notABFile)
 
     return res
 }
 
 fun kingMoves(index: Int): ULong {
-    val moves = listOf(1, 7, 8, 9, -1, -7, -8, -9)
+    val bit = 1UL shl index
 
     var res = 0UL
 
-    for (offset in moves) {
-        val target = index + offset
-        if (target in 0..63) {
-            res = res or (1UL shl target)
-        }
-    }
+    // left and right
+    res = res or ((bit shl 1) and notAFile)
+    res = res or ((bit shr 1) and notHFile)
+
+    // up and down
+    res = res or (bit shl 8)
+    res = res or (bit shr 8)
+
+    // diagonals
+    res = res or ((bit shl 9) and notAFile)
+    res = res or ((bit shl 7) and notHFile)
+    res = res or ((bit shr 7) and notAFile)
+    res = res or ((bit shr 9) and notHFile)
 
     return res
 }
