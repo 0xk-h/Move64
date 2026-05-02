@@ -79,17 +79,41 @@ fun generateRookMoves(board: Board, index: Int, color: Color): Output {
 }
 
 fun generateKnightMoves(board: Board, index: Int, color: Color): Output {
-    return Output()
+    val occupied = board.occupied
+    val reachable = knightMoves(index)
+    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+
+    val moves = reachable and occupied.inv()
+    val captures = reachable and enemies
+    return Output(captures = captures, moves = moves)
 }
 
 fun generateBishopMoves(board: Board, index: Int, color: Color): Output {
-    return Output()
+    val occupied = board.occupied
+    val reachable = bishopMoves(index, occupied)
+    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+
+    val moves = reachable and occupied.inv()
+    val captures = reachable and enemies
+    return Output(captures = captures, moves = moves)
 }
 
 fun generateQueenMoves(board: Board, index: Int, color: Color): Output {
-    return Output()
+    val occupied = board.occupied
+    val reachable = queenMoves(index, occupied)
+    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+
+    val moves = reachable and occupied.inv()
+    val captures = reachable and enemies
+    return Output(captures = captures, moves = moves)
 }
 
 fun generateKingMoves(board: Board, index: Int, color: Color): Output {
-    return Output()
+    val occupied = board.occupied
+    val reachable = kingMoves(index)
+    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+
+    val moves = reachable and occupied.inv()
+    val captures = reachable and enemies
+    return Output(captures = captures, moves = moves)
 }
