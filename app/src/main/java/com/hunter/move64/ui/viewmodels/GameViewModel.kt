@@ -24,6 +24,8 @@ class GameViewModel: ViewModel() {
     private val _boardState = MutableStateFlow(List(64) { States.Normal })
     val boardState = _boardState.asStateFlow()
 
+    private val _moves = MutableStateFlow(generateMoves(board.value))
+
     var selectedSquare: Int? = null
 
     fun applyStateChanges(newState: MutableList<States>, bb: ULong, state: States): MutableList<States> {
@@ -49,6 +51,8 @@ class GameViewModel: ViewModel() {
             newHighlights[index] = true
             _isHighlighted.value = newHighlights
             selectedSquare = null
+            _moves.value = generateMoves(board.value)
+
         }
 
         // Selected invalid so nothing is selected
@@ -65,8 +69,8 @@ class GameViewModel: ViewModel() {
             selectedSquare = index
             newState[index] = States.Selected
 
-            val res = generateMoves(board.value, index)
-            applyStateChanges(newState, res.moves, States.Move)
+            val res = _moves.value[index]
+            applyStateChanges(newState, res!!.moves, States.Move)
             applyStateChanges(newState, res.captures, States.Capture)
 
             _boardState.value = newState
@@ -77,6 +81,7 @@ class GameViewModel: ViewModel() {
         _board.value = getInitialBoard()
         _boardState.value = List(64) { States.Normal }
         _isHighlighted.value = List(64) { false }
+        _moves.value = generateMoves(board.value)
 
         selectedSquare = null
     }

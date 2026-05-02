@@ -5,7 +5,7 @@ data class Output (
     val moves: ULong = 0UL
 )
 
-fun generateMoves(board: Board, index: Int): Output {
+fun generatePseudoMoves(board: Board, index: Int): Output {
     val piece = board.getPiece(index)
 
     return when (piece?.type) {
