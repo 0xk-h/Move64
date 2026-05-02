@@ -36,6 +36,7 @@ object ChessColors {
 fun ChessBoard(
     grid: List<Pieces?>,
     boardState: List<States>,
+    isHighlighted: List<Boolean>,
     onSquareClick: (Int) -> Unit
 ) {
     BoxWithConstraints(
@@ -63,7 +64,7 @@ fun ChessBoard(
                                     }
                                 )
                                 .background(
-                                    if (boardState[index] == States.Highlighted || boardState[index] == States.Selected) {
+                                    if (isHighlighted[index] || boardState[index] == States.Selected) {
                                         if ((i + j) % 2 == 0) ChessColors.highlightsB else ChessColors.highlightsW
                                     } else {
                                         ChessColors.none

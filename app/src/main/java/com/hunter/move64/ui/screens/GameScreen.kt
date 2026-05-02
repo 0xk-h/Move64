@@ -36,6 +36,7 @@ fun GameScreen(
     val board by vm.board.collectAsState()
     val grid = board.toGrid()
     val boardState by vm.boardState.collectAsState()
+    val isHighlighted by vm.isHighlighted.collectAsState()
 
     Scaffold(
         topBar = {
@@ -89,6 +90,7 @@ fun GameScreen(
             ChessBoard(
                 grid,
                 boardState,
+                isHighlighted,
                 onSquareClick = vm::onSquareClick
             )
 

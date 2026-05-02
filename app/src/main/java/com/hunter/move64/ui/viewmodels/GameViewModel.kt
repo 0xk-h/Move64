@@ -9,21 +9,17 @@ import kotlinx.coroutines.flow.asStateFlow
 
 enum class States {
     Normal,
-    Highlighted,
     Selected,
     Move,
     Capture
 }
 
-private fun removeSelectedSquare(state: MutableList<States>): MutableList<States> {
-    return state.map {
-        if (it != States.Highlighted) States.Normal else it
-    }.toMutableList()
-}
-
 class GameViewModel: ViewModel() {
     private val _board = MutableStateFlow(getInitialBoard())
     val board = _board.asStateFlow()
+
+    private val _isHighlighted = MutableStateFlow(List(64) {false})
+    val isHighlighted = _isHighlighted.asStateFlow()
 
     private val _boardState = MutableStateFlow(List(64) { States.Normal })
     val boardState = _boardState.asStateFlow()
@@ -47,23 +43,25 @@ class GameViewModel: ViewModel() {
         // apply the move and reset the board state
         if (boardState.value[index] == States.Move || boardState.value[index] == States.Capture) {
             _board.value = applyMove(board.value, selectedSquare!!, index)
-            val newState = MutableList(64) {States.Normal}
-            newState[selectedSquare!!] = States.Highlighted
-            newState[index] = States.Highlighted
-            _boardState.value = newState
+            _boardState.value = List(64) {States.Normal}
+            val newHighlights = MutableList(64) {false}
+            newHighlights[selectedSquare!!] = true
+            newHighlights[index] = true
+            _isHighlighted.value = newHighlights
             selectedSquare = null
         }
 
         // Selected invalid so nothing is selected
         else if (piece == null || piece.color != board.value.getCurrPlayer()) {
             selectedSquare?.let {
-                _boardState.value = removeSelectedSquare(_boardState.value.toMutableList())
+                _boardState.value = List(64) {States.Normal}
+                selectedSquare = null
             }
         }
 
         // selected a valid piece remove any previous selected ones
         else {
-            val newState = removeSelectedSquare(_boardState.value.toMutableList())
+            val newState = MutableList(64) {States.Normal}
             selectedSquare = index
             newState[index] = States.Selected
 
@@ -78,6 +76,7 @@ class GameViewModel: ViewModel() {
     fun reset() {
         _board.value = getInitialBoard()
         _boardState.value = List(64) { States.Normal }
+        _isHighlighted.value = List(64) { false }
 
         selectedSquare = null
     }
