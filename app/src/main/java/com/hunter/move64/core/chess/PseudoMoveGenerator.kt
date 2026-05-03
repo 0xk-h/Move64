@@ -3,7 +3,10 @@ package com.hunter.move64.core.chess
 data class Output (
     val captures: ULong = 0UL,
     val moves: ULong = 0UL
-)
+) {
+    val isEmpty: Boolean
+        get() = captures == 0UL && moves == 0UL
+}
 
 fun generatePseudoMoves(board: Board, index: Int): Output {
     val piece = board.getPiece(index)

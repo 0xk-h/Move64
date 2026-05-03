@@ -1,6 +1,7 @@
 package com.hunter.move64.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.hunter.move64.core.chess.GameState
 import com.hunter.move64.core.chess.applyMove
 import com.hunter.move64.core.chess.generateMoves
 import com.hunter.move64.core.chess.getInitialBoard
@@ -24,7 +25,10 @@ class GameViewModel: ViewModel() {
     private val _boardState = MutableStateFlow(List(64) { States.Normal })
     val boardState = _boardState.asStateFlow()
 
-    private val _moves = MutableStateFlow(generateMoves(board.value))
+    private val _moves = MutableStateFlow(generateMoves(board.value).moves)
+
+    private val _gameState = MutableStateFlow(GameState.Ongoing)
+    val gameState = _gameState.asStateFlow()
 
     var selectedSquare: Int? = null
 
@@ -51,8 +55,9 @@ class GameViewModel: ViewModel() {
             newHighlights[index] = true
             _isHighlighted.value = newHighlights
             selectedSquare = null
-            _moves.value = generateMoves(board.value)
-
+            val res = generateMoves(board.value)
+            _moves.value = res.moves
+            _gameState.value = res.gameState
         }
 
         // Selected invalid so nothing is selected
@@ -81,7 +86,8 @@ class GameViewModel: ViewModel() {
         _board.value = getInitialBoard()
         _boardState.value = List(64) { States.Normal }
         _isHighlighted.value = List(64) { false }
-        _moves.value = generateMoves(board.value)
+        _moves.value = generateMoves(board.value).moves
+        _gameState.value = GameState.Ongoing
 
         selectedSquare = null
     }

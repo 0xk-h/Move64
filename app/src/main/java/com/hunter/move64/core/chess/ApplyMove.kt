@@ -3,132 +3,117 @@ package com.hunter.move64.core.chess
 import kotlin.math.abs
 
 fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
-    var board = board
-    val piece = board.getPiece(from)
+    var nextBoard = board
+    val piece = board.getPiece(from) ?: return board
     val captured = board.getPiece(to)
 
     // if any enPassant capture occurs (only deleting the captured pawn)
-    board.enPassantSquare?.let {
-        if(to == it) {
-            val pos = if(piece!!.color == Color.White) to - 8 else to + 8
-            board = updateBoard(board, Piece(PieceType.Pawn, piece.color.opposite), 1UL shl pos)
+    board.enPassantSquare?.let { epSquare ->
+        if (to == epSquare && piece.type == PieceType.Pawn) {
+            val capturedPawnPos = if (piece.color == Color.White) to - 8 else to + 8
+            nextBoard = updateBoard(nextBoard, Piece(PieceType.Pawn, piece.color.opposite), 1UL shl capturedPawnPos)
         }
     }
 
     // just some customs
-    board = updateGameState(board, from, piece!!)
+    nextBoard = updateGameState(nextBoard, from, to, piece)
 
     // remove from previous position
-    board = updateBoard(board, piece, 1UL shl from)
-
-    // add it in the new position
-    board = if (promotion != null) {
-        updateBoard(board, Piece(promotion, piece.color), 1UL shl to)
-    } else {
-        updateBoard(board, piece, 1UL shl to)
-    }
+    nextBoard = updateBoard(nextBoard, piece, 1UL shl from)
 
     // if castling happens should move the rook
+    nextBoard = if (promotion != null) {
+        updateBoard(nextBoard, Piece(promotion, piece.color), 1UL shl to)
+    } else {
+        updateBoard(nextBoard, piece, 1UL shl to)
+    }
+
+    // add it in the new position
     if (piece.type == PieceType.King && abs(from - to) == 2) {
-        // Queen Side Castling
-        if (to < from) {
-            // from Position of rook
-            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 2))
-            // to Position of rook
-            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
-        }
-        // King Side Castling
-        else {
-            // from Position of rook
-            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
-            // to Position of rook
-            board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 1))
+        if (to < from) { // Queen Side Castling
+            val rookFrom = if (piece.color == Color.White) 0 else 56
+            val rookTo = if (piece.color == Color.White) 3 else 59
+            val rook = Piece(PieceType.Rook, piece.color)
+            nextBoard = updateBoard(nextBoard, rook, 1UL shl rookFrom)
+            nextBoard = updateBoard(nextBoard, rook, 1UL shl rookTo)
+        } else { // King Side Castling
+            val rookFrom = if (piece.color == Color.White) 7 else 63
+            val rookTo = if (piece.color == Color.White) 5 else 61
+            val rook = Piece(PieceType.Rook, piece.color)
+            nextBoard = updateBoard(nextBoard, rook, 1UL shl rookFrom)
+            nextBoard = updateBoard(nextBoard, rook, 1UL shl rookTo)
         }
     }
 
     // updating enPassant square if any
     if (piece.type == PieceType.Pawn && abs(from - to) == 16) {
-        board.enPassantSquare = if (to > from) from + 8 else from - 8
+        val epSquare = if (to > from) from + 8 else from - 8
+        nextBoard = nextBoard.copy(enPassantSquare = epSquare)
     }
 
     captured?.let {
-        board = updateBoard(board, captured, (1UL shl to))
+        nextBoard = updateBoard(nextBoard, it, 1UL shl to)
     }
 
-    return board
+    return nextBoard
 }
 
 fun updateBoard(board: Board, piece: Piece, mask: ULong): Board {
     return when (piece.color) {
         Color.White -> when (piece.type) {
-            PieceType.Pawn -> board.copy(
-                whitePawn = board.whitePawn xor mask
-            )
-            PieceType.Rook -> board.copy(
-                whiteRook = board.whiteRook xor mask
-            )
-            PieceType.Knight -> board.copy(
-                whiteKnight = board.whiteKnight xor mask
-            )
-            PieceType.Bishop -> board.copy(
-                whiteBishop = board.whiteBishop xor mask
-            )
-            PieceType.Queen -> board.copy(
-                whiteQueen = board.whiteQueen xor mask
-            )
-            PieceType.King -> board.copy(
-                whiteKing = board.whiteKing xor mask
-            )
+            PieceType.Pawn -> board.copy(whitePawn = board.whitePawn xor mask)
+            PieceType.Rook -> board.copy(whiteRook = board.whiteRook xor mask)
+            PieceType.Knight -> board.copy(whiteKnight = board.whiteKnight xor mask)
+            PieceType.Bishop -> board.copy(whiteBishop = board.whiteBishop xor mask)
+            PieceType.Queen -> board.copy(whiteQueen = board.whiteQueen xor mask)
+            PieceType.King -> board.copy(whiteKing = board.whiteKing xor mask)
         }
 
         Color.Black -> when (piece.type) {
-            PieceType.Pawn -> board.copy(
-                blackPawn = board.blackPawn xor mask
-            )
-            PieceType.Rook -> board.copy(
-                blackRook = board.blackRook xor mask
-            )
-            PieceType.Knight -> board.copy(
-                blackKnight = board.blackKnight xor mask
-            )
-            PieceType.Bishop -> board.copy(
-                blackBishop = board.blackBishop xor mask
-            )
-            PieceType.Queen -> board.copy(
-                blackQueen = board.blackQueen xor mask
-            )
-            PieceType.King -> board.copy(
-                blackKing = board.blackKing xor mask
-            )
+            PieceType.Pawn -> board.copy(blackPawn = board.blackPawn xor mask)
+            PieceType.Rook -> board.copy(blackRook = board.blackRook xor mask)
+            PieceType.Knight -> board.copy(blackKnight = board.blackKnight xor mask)
+            PieceType.Bishop -> board.copy(blackBishop = board.blackBishop xor mask)
+            PieceType.Queen -> board.copy(blackQueen = board.blackQueen xor mask)
+            PieceType.King -> board.copy(blackKing = board.blackKing xor mask)
         }
     }
 }
 
-fun updateGameState(board: Board, from: Int, piece: Piece): Board {
-    when (piece.type) {
-        PieceType.King -> {
-            if (piece.color == Color.White) {
-                board.whiteKingSideCastle = false
-                board.whiteQueenSideCastle = false
-            } else {
-                board.blackKingSideCastle = false
-                board.blackQueenSideCastle = false
-            }
+fun updateGameState(board: Board, from: Int, to: Int, piece: Piece): Board {
+    var wks = board.whiteKingSideCastle
+    var wqs = board.whiteQueenSideCastle
+    var bks = board.blackKingSideCastle
+    var bqs = board.blackQueenSideCastle
+
+    fun updateCastling(pos: Int) {
+        when (pos) {
+            0 -> wqs = false
+            7 -> wks = false
+            56 -> bqs = false
+            63 -> bks = false
         }
-        PieceType.Rook -> {
-            when (from) {
-                0 -> board.whiteQueenSideCastle = false
-                7 -> board.whiteKingSideCastle = false
-                56 -> board.blackQueenSideCastle = false
-                63 -> board.blackKingSideCastle = false
-                else -> {}
-            }
-        }
-        else -> {}
     }
 
-    board.isWhiteMove = !board.isWhiteMove
-    board.enPassantSquare = null
+    if (piece.type == PieceType.King) {
+        if (piece.color == Color.White) {
+            wks = false
+            wqs = false
+        } else {
+            bks = false
+            bqs = false
+        }
+    }
 
-    return board
+    updateCastling(from)
+    updateCastling(to)
+
+    return board.copy(
+        isWhiteMove = !board.isWhiteMove,
+        enPassantSquare = null,
+        whiteKingSideCastle = wks,
+        whiteQueenSideCastle = wqs,
+        blackKingSideCastle = bks,
+        blackQueenSideCastle = bqs
+    )
 }
