@@ -7,10 +7,13 @@ fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
     val piece = board.getPiece(from)
     val captured = board.getPiece(to)
 
-    println(piece!!.type)
-    println("from: $from ; to: $to")
-
-
+    // if any enPassant capture occurs (only deleting the captured pawn)
+    board.enPassantSquare?.let {
+        if(to == it) {
+            val pos = if(piece!!.color == Color.White) to - 8 else to + 8
+            board = updateBoard(board, Piece(PieceType.Pawn, piece.color.opposite), 1UL shl pos)
+        }
+    }
 
     // just some customs
     board = updateGameState(board, from, piece!!)
@@ -30,8 +33,6 @@ fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
         // Queen Side Castling
         if (to < from) {
             // from Position of rook
-            println("from position of rook: ${to - 2}")
-            println("to position of rook: ${to + 1}")
             board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 2))
             // to Position of rook
             board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
@@ -39,12 +40,15 @@ fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
         // King Side Castling
         else {
             // from Position of rook
-            println("from position of rook: ${to + 1}")
-            println("to position of rook: ${to - 1}")
             board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to + 1))
             // to Position of rook
             board = updateBoard(board, Piece(PieceType.Rook, piece.color), 1UL shl (to - 1))
         }
+    }
+
+    // updating enPassant square if any
+    if (piece.type == PieceType.Pawn && abs(from - to) == 16) {
+        board.enPassantSquare = if (to > from) from + 8 else from - 8
     }
 
     captured?.let {

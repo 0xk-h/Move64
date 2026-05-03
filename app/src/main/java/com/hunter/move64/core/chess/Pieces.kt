@@ -26,7 +26,10 @@ enum class PieceType {
 
 enum class Color {
     White,
-    Black
+    Black;
+
+    val opposite: Color
+        get() = if (this == White) Black else White
 }
 
 data class Piece(

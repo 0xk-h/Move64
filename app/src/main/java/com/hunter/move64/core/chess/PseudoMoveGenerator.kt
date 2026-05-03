@@ -1,7 +1,5 @@
 package com.hunter.move64.core.chess
 
-import android.service.autofill.Validators.and
-
 data class Output (
     val captures: ULong = 0UL,
     val moves: ULong = 0UL
@@ -32,7 +30,8 @@ fun generatePawnMoves(board: Board, index: Int, color: Color): Output {
 
     val occupied = board.occupied
     val i = 1UL shl index
-    val enemies = if (color == Color.White) board.blackPieces else board.whitePieces
+    val enPassant = board.enPassantSquare?.let { 1UL shl it } ?: 0UL
+    val enemies = (if (color == Color.White) board.blackPieces else board.whitePieces) or enPassant
 
     if (color == Color.White) {
         val oneStep = i shl 8
