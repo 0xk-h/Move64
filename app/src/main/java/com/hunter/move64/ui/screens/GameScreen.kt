@@ -1,6 +1,7 @@
 package com.hunter.move64.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hunter.move64.core.chess.GameState
+import com.hunter.move64.ui.components.CheckmatePopup
 import com.hunter.move64.ui.components.ChessBoard
+import com.hunter.move64.ui.components.DrawPopup
 import com.hunter.move64.ui.theme.Move64Theme
 import com.hunter.move64.ui.viewmodels.GameViewModel
 
@@ -37,6 +41,7 @@ fun GameScreen(
     val grid = board.toGrid()
     val boardState by vm.boardState.collectAsState()
     val isHighlighted by vm.isHighlighted.collectAsState()
+    val gameState by vm.gameState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -75,30 +80,51 @@ fun GameScreen(
             )
         }
     ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        Box(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Text(
-                text = "Bot"
-            )
-            Spacer(modifier = Modifier.size(32.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Player 1"
+                )
+                Spacer(modifier = Modifier.size(32.dp))
 
-            ChessBoard(
-                grid,
-                boardState,
-                isHighlighted,
-                onSquareClick = vm::onSquareClick
-            )
+                ChessBoard(
+                    grid,
+                    boardState,
+                    isHighlighted,
+                    onSquareClick = vm::onSquareClick
+                )
 
-            Spacer(modifier = Modifier.size(32.dp))
+                Spacer(modifier = Modifier.size(32.dp))
 
-            Text(
-                text = "Player 1"
-            )
+                Text(
+                    text = "Player 2"
+                )
+            }
+
+            if (gameState != GameState.Ongoing && gameState != GameState.Check) {
+                if (gameState == GameState.Checkmate) {
+                    CheckmatePopup(
+                        winner = if(board.isWhiteMove) "Black" else "White",
+                        onPlayAgain = vm::reset,
+                        onBack = onBackClick
+                    )
+                } else {
+                    DrawPopup(
+                        reason = gameState,
+                        onPlayAgain = vm::reset,
+                        onBack = onBackClick
+                    )
+
+                }
+            }
         }
     }
 }
