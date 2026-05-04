@@ -29,8 +29,6 @@ object ChessColors {
     val white = Color(0xFF765637)
     val highlightsW = Color(0xFFA27635)
     val highlightsB = Color(0xFFB48A3D)
-    val check = Color(0xFFD32F2F).copy(alpha = 0.6f)
-    val none = Color(0x00FFFFFF)
 }
 
 @Composable
@@ -38,8 +36,6 @@ fun ChessBoard(
     grid: List<Pieces?>,
     boardState: List<States>,
     isHighlighted: List<Boolean>,
-    king: Pieces,
-    kingInCheck: Boolean,
     onSquareClick: (Int) -> Unit
 ) {
     BoxWithConstraints(
@@ -73,24 +69,6 @@ fun ChessBoard(
                             contentAlignment = Alignment.Center
                         ) {
                             val piece = grid[index]
-
-                            if (piece == king && kingInCheck) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(ChessColors.check),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(squareSize)
-                                            .background(
-                                                baseColor,
-                                                CircleShape
-                                            )
-                                    )
-                                }
-                            }
 
                             piece?.let {
                                 Image(

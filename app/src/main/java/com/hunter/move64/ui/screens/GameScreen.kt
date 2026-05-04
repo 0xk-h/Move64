@@ -18,16 +18,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hunter.move64.core.chess.GameState
-import com.hunter.move64.core.chess.Pieces
 import com.hunter.move64.ui.components.CheckmatePopup
 import com.hunter.move64.ui.components.ChessBoard
 import com.hunter.move64.ui.components.DrawPopup
@@ -45,7 +42,6 @@ fun GameScreen(
     val boardState by vm.boardState.collectAsState()
     val isHighlighted by vm.isHighlighted.collectAsState()
     val gameState by vm.gameState.collectAsState()
-    val king by remember { derivedStateOf { if (board.isWhiteMove) Pieces.WhiteKing else Pieces.BlackKing } }
 
     Scaffold(
         topBar = {
@@ -103,8 +99,6 @@ fun GameScreen(
                     grid,
                     boardState,
                     isHighlighted,
-                    king,
-                    kingInCheck = gameState == GameState.Check,
                     onSquareClick = vm::onSquareClick
                 )
 
