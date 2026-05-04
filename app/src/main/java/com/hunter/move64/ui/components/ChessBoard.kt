@@ -29,6 +29,7 @@ object ChessColors {
     val white = Color(0xFF765637)
     val highlightsW = Color(0xFFA27635)
     val highlightsB = Color(0xFFB48A3D)
+    val check = Color(0xFFD32F2F).copy(alpha = 0.6f)
     val none = Color(0x00FFFFFF)
 }
 
@@ -37,6 +38,8 @@ fun ChessBoard(
     grid: List<Pieces?>,
     boardState: List<States>,
     isHighlighted: List<Boolean>,
+    king: Pieces,
+    kingInCheck: Boolean,
     onSquareClick: (Int) -> Unit
 ) {
     BoxWithConstraints(
@@ -47,35 +50,47 @@ fun ChessBoard(
     ) {
         val squareSize = maxWidth / 8
 
-        Column() {
+        Column {
             for (i in 0..7) {
-                Row() {
+                Row {
                     for (j in 0..7) {
                         val index: Int = (7 - i) * 8 + j
+
+                        val baseColor = if ((i + j) % 2 == 0) ChessColors.black else ChessColors.white
+                        val highlights = if (isHighlighted[index] || boardState[index] == States.Selected) {
+                            if ((i + j) % 2 == 0) ChessColors.highlightsB else ChessColors.highlightsW
+                        } else null
+
+                        val finalColor = highlights ?: baseColor
 
                         Box(
                             modifier = Modifier
                                 .size(squareSize)
-                                .background(
-                                    if ((i + j) % 2 == 0) {
-                                        ChessColors.black
-                                    } else {
-                                        ChessColors.white
-                                    }
-                                )
-                                .background(
-                                    if (isHighlighted[index] || boardState[index] == States.Selected) {
-                                        if ((i + j) % 2 == 0) ChessColors.highlightsB else ChessColors.highlightsW
-                                    } else {
-                                        ChessColors.none
-                                    }
-                                )
+                                .background(finalColor)
                                 .clickable {
                                     onSquareClick(index)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             val piece = grid[index]
+
+                            if (piece == king && kingInCheck) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(ChessColors.check),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(squareSize)
+                                            .background(
+                                                baseColor,
+                                                CircleShape
+                                            )
+                                    )
+                                }
+                            }
 
                             piece?.let {
                                 Image(
@@ -108,7 +123,6 @@ fun ChessBoard(
                                         )
                                 )
                             }
-
                         }
                     }
                 }

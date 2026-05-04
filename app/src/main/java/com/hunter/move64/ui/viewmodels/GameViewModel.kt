@@ -75,7 +75,7 @@ class GameViewModel: ViewModel() {
             newState[index] = States.Selected
 
             val res = _moves.value[index]
-            applyStateChanges(newState, res!!.moves, States.Move)
+            applyStateChanges(newState, res.moves, States.Move)
             applyStateChanges(newState, res.captures, States.Capture)
 
             _boardState.value = newState
