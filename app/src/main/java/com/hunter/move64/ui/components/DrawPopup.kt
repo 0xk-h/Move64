@@ -43,6 +43,7 @@ fun DrawPopup(
                 GameState.Stalemate -> DrawReason("Stalemate", "No legal moves for current player")
                 GameState.DrawByRepetition -> DrawReason("Threefold Repetition", "The position repeated 3 times")
                 GameState.DrawByInsufficientMaterial -> DrawReason("Insufficient Material", "No checkmate is possible")
+                GameState.DrawBy50MoveRule -> DrawReason("50-Move Rule", "No pawn moves or captures in 50 moves")
                 else -> DrawReason("Draw", "Game ended in a draw")
             }
 

@@ -23,6 +23,11 @@ fun PopupCard(
         modifier = Modifier
             .fillMaxWidth(0.75f)
             .widthIn(max = 420.dp)
+            .border(
+                1.dp,
+                Color.White.copy(alpha = 0.1f),
+                RoundedCornerShape(24.dp)
+            )
             .background(
                 Brush.verticalGradient(
                     listOf(
@@ -30,11 +35,6 @@ fun PopupCard(
                         Color(0xFF0F1720)
                     )
                 )
-            )
-            .border(
-                1.dp,
-                Color.White.copy(alpha = 0.1f),
-                RoundedCornerShape(24.dp)
             )
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally

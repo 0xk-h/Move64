@@ -12,7 +12,23 @@ enum class Pieces {
     BlackBishop,
     BlackKnight,
     BlackRook,
-    BlackPawn
+    BlackPawn;
+
+    val type: PieceType
+        get() = when (this) {
+            WhiteKing, BlackKing -> PieceType.King
+            WhiteQueen, BlackQueen -> PieceType.Queen
+            WhiteBishop, BlackBishop -> PieceType.Bishop
+            WhiteKnight, BlackKnight -> PieceType.Knight
+            WhiteRook, BlackRook -> PieceType.Rook
+            WhitePawn, BlackPawn -> PieceType.Pawn
+        }
+
+    val color: Color
+        get() = when (this) {
+            WhiteKing, WhiteQueen, WhiteBishop, WhiteKnight, WhiteRook, WhitePawn -> Color.White
+            BlackKing, BlackQueen, BlackBishop, BlackKnight, BlackRook, BlackPawn -> Color.Black
+        }
 }
 
 enum class PieceType {

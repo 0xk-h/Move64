@@ -28,7 +28,9 @@ data class Board (
     val enPassantSquare: Int? = null,
 
     // Draw Condition
-    val halfMoveClock: Int = 0
+    val halfMoveClock: Int = 0,
+    val zobristHash: Long = 0L,
+    val history: List<Long> = emptyList()
 ) {
     val whitePieces: ULong
         get() = whitePawn or whiteRook or whiteBishop or whiteKnight or whiteQueen or whiteKing
@@ -67,6 +69,19 @@ data class Board (
         if (pawn and enemies != 0UL) return true
 
         return false
+    }
+
+    fun allPiecesWithoutKings(): ULong {
+        return whitePawn or
+                whiteRook or
+                whiteBishop or
+                whiteKnight or
+                whiteQueen or
+                blackRook or
+                blackBishop or
+                blackPawn or
+                blackKnight or
+                blackQueen
     }
 
     fun getPiece(index: Int): Piece? {
@@ -156,5 +171,8 @@ fun getInitialBoard(): Board {
 
         enPassantSquare = null,
         halfMoveClock = 0
-    )
+    ).let { 
+        val hash = computeHash(it)
+        it.copy(zobristHash = hash, history = listOf(hash))
+    }
 }

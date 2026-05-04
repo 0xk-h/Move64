@@ -2,7 +2,7 @@ package com.hunter.move64.core.chess
 
 import kotlin.math.abs
 
-fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
+fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?, updateHash: Boolean = true): Board {
     var nextBoard = board
     val piece = board.getPiece(from) ?: return board
     val captured = board.getPiece(to)
@@ -15,20 +15,25 @@ fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
         }
     }
 
+    // handle capture
+    captured?.let {
+        nextBoard = updateBoard(nextBoard, it, 1UL shl to)
+    }
+
     // just some customs
-    nextBoard = updateGameState(nextBoard, from, to, piece)
+    nextBoard = updateGameState(nextBoard, from, to, piece, captured)
 
     // remove from previous position
     nextBoard = updateBoard(nextBoard, piece, 1UL shl from)
 
-    // if castling happens should move the rook
+    // add it in the new position
     nextBoard = if (promotion != null) {
         updateBoard(nextBoard, Piece(promotion, piece.color), 1UL shl to)
     } else {
         updateBoard(nextBoard, piece, 1UL shl to)
     }
 
-    // add it in the new position
+    // if castling happens should move the rook
     if (piece.type == PieceType.King && abs(from - to) == 2) {
         if (to < from) { // Queen Side Castling
             val rookFrom = if (piece.color == Color.White) 0 else 56
@@ -51,11 +56,17 @@ fun applyMove(board: Board, from: Int, to: Int, promotion: PieceType?): Board {
         nextBoard = nextBoard.copy(enPassantSquare = epSquare)
     }
 
-    captured?.let {
-        nextBoard = updateBoard(nextBoard, it, 1UL shl to)
+    if (!updateHash) return nextBoard
+
+    // Update Zobrist Hash and History
+    val newHash = computeHash(nextBoard)
+    val newHistory = if (piece.type == PieceType.Pawn || captured != null) {
+        listOf(newHash)
+    } else {
+        board.history + newHash
     }
 
-    return nextBoard
+    return nextBoard.copy(zobristHash = newHash, history = newHistory)
 }
 
 fun updateBoard(board: Board, piece: Piece, mask: ULong): Board {
@@ -80,7 +91,7 @@ fun updateBoard(board: Board, piece: Piece, mask: ULong): Board {
     }
 }
 
-fun updateGameState(board: Board, from: Int, to: Int, piece: Piece): Board {
+fun updateGameState(board: Board, from: Int, to: Int, piece: Piece, captured: Piece?): Board {
     var wks = board.whiteKingSideCastle
     var wqs = board.whiteQueenSideCastle
     var bks = board.blackKingSideCastle
@@ -105,6 +116,8 @@ fun updateGameState(board: Board, from: Int, to: Int, piece: Piece): Board {
         }
     }
 
+    val hmc = if (piece.type == PieceType.Pawn || captured != null) 0 else board.halfMoveClock + 1
+
     updateCastling(from)
     updateCastling(to)
 
@@ -114,6 +127,7 @@ fun updateGameState(board: Board, from: Int, to: Int, piece: Piece): Board {
         whiteKingSideCastle = wks,
         whiteQueenSideCastle = wqs,
         blackKingSideCastle = bks,
-        blackQueenSideCastle = bqs
+        blackQueenSideCastle = bqs,
+        halfMoveClock = hmc
     )
 }

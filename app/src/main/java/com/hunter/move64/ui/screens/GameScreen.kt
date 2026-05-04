@@ -42,6 +42,7 @@ fun GameScreen(
     val boardState by vm.boardState.collectAsState()
     val isHighlighted by vm.isHighlighted.collectAsState()
     val gameState by vm.gameState.collectAsState()
+    val promotionSquares by vm.promotionSquares.collectAsState()
 
     Scaffold(
         topBar = {
@@ -99,7 +100,9 @@ fun GameScreen(
                     grid,
                     boardState,
                     isHighlighted,
-                    onSquareClick = vm::onSquareClick
+                    promotionSquares,
+                    onSquareClick = vm::onSquareClick,
+                    onCancel = vm::onCancel
                 )
 
                 Spacer(modifier = Modifier.size(32.dp))

@@ -9,19 +9,25 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hunter.move64.R
+import com.hunter.move64.core.chess.PieceType
 import com.hunter.move64.core.chess.Pieces
+import com.hunter.move64.ui.viewmodels.PromotionSquare
 import com.hunter.move64.ui.viewmodels.States
 
 object ChessColors {
@@ -29,6 +35,7 @@ object ChessColors {
     val white = Color(0xFF765637)
     val highlightsW = Color(0xFFA27635)
     val highlightsB = Color(0xFFB48A3D)
+    val promotionSquare = Color(0xFFEAEAEA)
 }
 
 @Composable
@@ -36,7 +43,9 @@ fun ChessBoard(
     grid: List<Pieces?>,
     boardState: List<States>,
     isHighlighted: List<Boolean>,
-    onSquareClick: (Int) -> Unit
+    promotionSquares: List<PromotionSquare?>,
+    onSquareClick: (Int, PieceType?) -> Unit,
+    onCancel: () -> Unit
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -64,12 +73,11 @@ fun ChessBoard(
                                 .size(squareSize)
                                 .background(finalColor)
                                 .clickable {
-                                    onSquareClick(index)
+                                    onSquareClick(index, null)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             val piece = grid[index]
-
                             piece?.let {
                                 Image(
                                     painter = painterResource(id = getDrawable(it)),
@@ -101,12 +109,88 @@ fun ChessBoard(
                                         )
                                 )
                             }
+
+                            promotionSquares[index]?.let { promotion ->
+                                promotion.value?.let {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(ChessColors.promotionSquare)
+                                            .clickable{
+                                                onSquareClick(index, promotion.value!!.type)
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = getDrawable(promotion.value!!)),
+                                            contentDescription = promotion.value!!.name,
+                                            modifier = Modifier.size(squareSize * 0.8f)
+                                        )
+                                    }
+                                } ?: CloseButton(index, onCancel)
+
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun CloseButton(index: Int, onCancel: () -> Unit) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable{onCancel()}
+        ) {
+            if (index > 31) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp
+                            )
+                        )
+                        .background(Color.Gray)
+                        .align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "x",
+                        color = Color.Black
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 20.dp,
+                                bottomEnd = 20.dp
+                            )
+                        )
+                        .background(Color.Gray)
+                        .align(Alignment.TopCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "x",
+                        color = Color.Black
+                    )
+                }
+            }
+        }
 }
 
 fun getDrawable(piece: Pieces): Int {
