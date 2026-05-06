@@ -1,5 +1,6 @@
 package com.hunter.move64.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,14 +18,15 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PopupButton(
     text: String,
-    modifier: Modifier = Modifier,
+    bg: Color,
     onClick: () -> Unit
 ) {
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
+            .background(bg)
             .clickable { onClick() }
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center

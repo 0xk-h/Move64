@@ -16,9 +16,6 @@ data class Board (
     val blackQueen: ULong = 0UL,
     val blackKing: ULong = 0UL,
 
-    // Game State
-    val isWhiteMove: Boolean = true,
-
     // Special Rules
     val whiteKingSideCastle: Boolean = true,
     val whiteQueenSideCastle: Boolean = true,
@@ -29,6 +26,12 @@ data class Board (
 
     // Draw Condition
     val halfMoveClock: Int = 0,
+
+    // Game State
+    val isWhiteMove: Boolean = true,
+    val fullMoveCount: Int = 0,
+
+    // Zobrist hash
     val zobristHash: Long = 0L,
     val history: List<Long> = emptyList()
 ) {

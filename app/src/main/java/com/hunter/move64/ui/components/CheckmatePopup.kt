@@ -48,11 +48,11 @@ fun CheckmatePopup(
 
             Spacer(Modifier.height(20.dp))
 
-            PopupButton("Play Again", Modifier.background(Color(0xFF3B82F6)), onPlayAgain)
+            PopupButton("Play Again", Color(0xFF3B82F6), onPlayAgain)
 
             Spacer(Modifier.height(10.dp))
 
-            PopupButton("Back to Menu", Modifier.background(Color(0xFF2A2F36)), onBack)
+            PopupButton("Back to Menu", Color(0xFF2A2F36), onBack)
         }
     }
 }

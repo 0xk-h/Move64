@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,9 @@ fun PopupCard(
             .border(
                 1.dp,
                 Color.White.copy(alpha = 0.1f),
+                RoundedCornerShape(24.dp)
+            )
+            .clip(
                 RoundedCornerShape(24.dp)
             )
             .background(
