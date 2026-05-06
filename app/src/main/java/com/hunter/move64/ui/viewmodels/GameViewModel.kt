@@ -1,14 +1,20 @@
 package com.hunter.move64.ui.viewmodels
 
+import android.R.attr.type
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hunter.move64.core.chess.Board
 import com.hunter.move64.core.chess.GameState
 import com.hunter.move64.core.chess.PieceType
 import com.hunter.move64.core.chess.Pieces
 import com.hunter.move64.core.chess.applyMove
 import com.hunter.move64.core.chess.generateMoves
 import com.hunter.move64.core.chess.getInitialBoard
+import com.hunter.move64.data.model.GameType
+import com.hunter.move64.domain.service.GameService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 enum class States {
     Normal,
@@ -29,7 +35,13 @@ sealed class PromotionSquare {
 
 }
 
-class GameViewModel: ViewModel() {
+class GameViewModel(
+    private val service: GameService
+): ViewModel() {
+    init {
+        loadLastGame()
+    }
+
     private val _board = MutableStateFlow(getInitialBoard())
     val board = _board.asStateFlow()
 
@@ -50,6 +62,18 @@ class GameViewModel: ViewModel() {
     private var _promotionIndex: Int? = null
 
     var selectedSquare: Int? = null
+
+    private fun loadLastGame() {
+        viewModelScope.launch {
+            _board.value = service.loadGame(GameType.PvP)
+        }
+    }
+
+    private fun saveGame(type: GameType) {
+        viewModelScope.launch {
+            service.saveGame(type, board.value)
+        }
+    }
 
     fun applyStateChanges(newState: MutableList<States>, bb: ULong, state: States): MutableList<States> {
         var bb = bb
@@ -84,6 +108,8 @@ class GameViewModel: ViewModel() {
                 val res = generateMoves(board.value)
                 _moves.value = res.moves
                 _gameState.value = res.gameState
+
+                saveGame(GameType.PvP)
                 }
             }
 
@@ -142,7 +168,8 @@ class GameViewModel: ViewModel() {
         _gameState.value = GameState.Ongoing
         _promotionSquares.value = List<PromotionSquare?>(64) { null }
         _promotionIndex = null
-
         selectedSquare = null
+
+        saveGame(GameType.PvP)
     }
 }

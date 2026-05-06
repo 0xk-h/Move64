@@ -117,6 +117,7 @@ fun updateGameState(board: Board, from: Int, to: Int, piece: Piece, captured: Pi
     }
 
     val hmc = if (piece.type == PieceType.Pawn || captured != null) 0 else board.halfMoveClock + 1
+    val fmc = if (piece.color == Color.Black) board.fullMoveCount + 1 else board.fullMoveCount
 
     updateCastling(from)
     updateCastling(to)
@@ -128,6 +129,7 @@ fun updateGameState(board: Board, from: Int, to: Int, piece: Piece, captured: Pi
         whiteQueenSideCastle = wqs,
         blackKingSideCastle = bks,
         blackQueenSideCastle = bqs,
-        halfMoveClock = hmc
+        halfMoveClock = hmc,
+        fullMoveCount = fmc
     )
 }

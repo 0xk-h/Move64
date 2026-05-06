@@ -34,8 +34,8 @@ import com.hunter.move64.ui.viewmodels.GameViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(
-    onBackClick: () -> Unit,
-    vm: GameViewModel = viewModel()
+    vm: GameViewModel,
+    onBackClick: () -> Unit
 ) {
     val board by vm.board.collectAsState()
     val grid = board.toGrid()
@@ -133,12 +133,13 @@ fun GameScreen(
 }
 
 
-@Preview
-@Composable
-fun GameScreenPreview() {
-    Move64Theme(darkTheme = true) {
-        GameScreen(
-            onBackClick = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//fun GameScreenPreview() {
+//    Move64Theme(darkTheme = true) {
+//        GameScreen(
+//            vm = GameViewModel(),
+//            onBackClick = {}
+//        )
+//    }
+//}
